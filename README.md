@@ -4,6 +4,10 @@
 - **Docker** installed
 - **Java JDK** installed (Please use openJDK 20 in this project)
 
+##  Find Related Run Files
+- All the source code are under **/src/main/java/com/oa/fetch_oa**.
+- Please find the jar file and Dockerfile under the **/target**.
+
 ## Running the Application
 ### 1. Build the Docker Image
 Run the following command to generate docker image:
