@@ -17,13 +17,18 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleException(Exception e) {
         Map<String, String> errors = new HashMap<>();
 
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+
         if (e instanceof HttpMessageNotReadableException) {
-            errors.put("error", "Request body is missing");
+            errors.put("error", "The receipt is invalid.");
         } else if (e instanceof  MethodArgumentNotValidException) {
             ((MethodArgumentNotValidException) e).getBindingResult().getFieldErrors().forEach(error ->
                     errors.put("error", error.getDefaultMessage()));
+        } else if (e instanceof NoReceiptFoundException) {
+            errors.put("error", e.getMessage());
+            status = HttpStatus.NOT_FOUND;
         }
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+        return ResponseEntity.status(status).body(errors);
     }
 }

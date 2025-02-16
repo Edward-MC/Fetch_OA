@@ -1,10 +1,9 @@
 package com.oa.fetch_oa.controller;
 
+import com.oa.fetch_oa.exception.NoReceiptFoundException;
 import com.oa.fetch_oa.pojo.Receipt;
 import com.oa.fetch_oa.pojo.ReceiptItem;
 import jakarta.validation.constraints.Pattern;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,8 +22,11 @@ public class ReceiptController {
 
     @PostMapping("/process")
     public Map<String, String> process(@RequestBody(required = true) @Validated Receipt receipt) {
+        // Use UUID as the receipt ID
         String newID = UUID.randomUUID().toString();
         dataMap.put(newID, receipt);
+
+        // Check if the information received is correct
         System.out.println("receipt:  " + receipt.toString());
 
         HashMap<String, String> responseMap = new HashMap<>();
@@ -33,17 +35,17 @@ public class ReceiptController {
     }
 
     @GetMapping("/{id}/points")
-    public ResponseEntity<Object> getPoints(@PathVariable @Pattern(regexp = "^\\S+$") String id) {
+    public Map<String, Integer> getPoints(@PathVariable @Pattern(regexp = "^\\S+$") String id) {
         HashMap<String, Integer> pointRes = new HashMap<>();
 
+        // Throw out and let GlobalExceptionHandler handle the exception
         if (!dataMap.containsKey(id)) {
-            Map<String, String> errorResponse = Map.of("error", "No receipt found for that ID.");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+            throw new NoReceiptFoundException("No receipt found for that ID.");
         }
 
         int points = processReceiptForPoint(dataMap.get(id));
         pointRes.put("points", points);
-        return ResponseEntity.status(HttpStatus.OK).body(pointRes);
+        return pointRes;
     }
 
     private int processReceiptForPoint(Receipt receipt) {
