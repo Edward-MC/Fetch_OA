@@ -10,7 +10,7 @@
 
 ## Running the Application
 ### 1. Build the Docker Image
-Run the following command to generate docker image:
+Please go to the folder where the Dockerfile is under, and run the following command to generate docker image:
 ```sh
 docker build -t fetch-oa-app .
 ```
